@@ -1,0 +1,36 @@
+{
+  "name": "cobasaja-",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_ENV=development nodemon src/server.js",
+    "prod": "NODE_ENV=production node src/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.53.0",
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
+    "compression": "^1.8.1",
+    "cookie-parse": "^0.4.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "midtrans-client": "^1.4.3",
+    "morgan": "^1.10.1",
+    "nanoid": "^5.1.5",
+    "nodemon": "^3.1.10",
+    "path": "^0.12.7",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7",
+    "uuid": "^11.1.0"
+  }
+}
