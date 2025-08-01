@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import userRepository from '../../repositories/userRepository.js';
+import User from '../../domain/entities/user.entity.js';
 
 export const refreshTokens = new Set();
 
@@ -8,9 +9,13 @@ export const loginUser = async ({ email, password }, res) => {
   const user = await userRepository.findByEmail(email);
   if (!user) throw { status: 404, message: 'User not found' };
 
+    if (!user.is_verified) throw { status: 403, message: 'Akun belum terverifikasi' };  
+
+  const userEntity = User.fromDatabase(user);
+  
   const match = await bcrypt.compare(password, user.password);
   if (!match) throw { status: 401, message: 'Password salah' };
-
+  
   const payload = { id: user.id, role: user.role };
 
   const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' });
@@ -34,14 +39,7 @@ export const loginUser = async ({ email, password }, res) => {
 
   return {
     message: 'Login berhasil',
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      phone_number: user.phone_number,
-      avatar_url: user.avatar_url,
-    },
+    user: userEntity.toProfileJSON(),
     accessToken,
     refreshToken
   };

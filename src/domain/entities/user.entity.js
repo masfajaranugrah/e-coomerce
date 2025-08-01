@@ -3,172 +3,134 @@ export default class User {
     id,
     name,
     email,
-    password_hash,
-    role = 'user',
-    access_token = null,
-    refresh_token = null,
-    paket_id = null,
-    paket_expired = null,
-    is_verified = false,
-    verification_token = null,
-    verification_token_expiry = null,
-    reset_token = null,
-    reset_token_expiry = null,
-    is_blocked = false,
-    blocked_reason = null,
-    avatar_url = null,
-    phone_number = null,
-    address = null,
-    created_at = new Date(),
-    last_login = null
-  }, strict = true) {
-
-    if (strict && !name) throw new Error('Name is required');
-    if (strict && !email) throw new Error('Email is required');
-    if (strict && !password_hash) throw new Error('Password hash is required');
+    password,
+    phone_number,
+    role,
+    alamat_jalan,
+    kelurahan,
+    kecamatan,
+    kabupaten_kota,
+    provinsi,
+    kode_pos,
+    avatar_url,
+    is_verified,
+    verification_token,
+    verification_token_expiry,
+    reset_token,
+    reset_token_expiry,
+    createdAt,
+    updatedAt,
+    strict = true
+  }) {
+    if (strict) {
+      if (!name) throw new Error('Name is required');
+      if (!email) throw new Error('Email is required');
+      if (!password) throw new Error('Password is required');
+    }
 
     this.id = id;
     this.name = name;
-    this.email = email?.toLowerCase();
-    this.password_hash = password_hash;
-    this.role = role;
+    this.email = email;
+    this.password = password;
+    this.phone_number = phone_number;
+    this.role = role || 'buyer';
 
-    this.access_token = access_token;
-    this.refresh_token = refresh_token;
-
-    this.paket_id = paket_id;
-    this.paket_expired = paket_expired ? new Date(paket_expired) : null;
-
-    this.is_verified = is_verified;
-    this.verification_token = verification_token;
-    this.verification_token_expiry = verification_token_expiry ? new Date(verification_token_expiry) : null;
-
-    this.reset_token = reset_token;
-    this.reset_token_expiry = reset_token_expiry ? new Date(reset_token_expiry) : null;
-
-    this.is_blocked = is_blocked;
-    this.blocked_reason = blocked_reason;
+    // Alamat lengkap
+    this.alamat_jalan = alamat_jalan;
+    this.kelurahan = kelurahan;
+    this.kecamatan = kecamatan;
+    this.kabupaten_kota = kabupaten_kota;
+    this.provinsi = provinsi;
+    this.kode_pos = kode_pos;
 
     this.avatar_url = avatar_url;
-    this.phone_number = phone_number;
-    this.address = address;
+    this.is_verified = is_verified ?? false;
+    this.verification_token = verification_token;
+    this.verification_token_expiry = verification_token_expiry
+      ? new Date(verification_token_expiry)
+      : null;
+    this.reset_token = reset_token;
+    this.reset_token_expiry = reset_token_expiry
+      ? new Date(reset_token_expiry)
+      : null;
 
-    this.created_at = new Date(created_at);
-    this.last_login = last_login ? new Date(last_login) : null;
+    this.createdAt = createdAt ? new Date(createdAt) : null;
+    this.updatedAt = updatedAt ? new Date(updatedAt) : null;
   }
 
-  static fromDb(data) {
-    if (!data || typeof data !== 'object') {
-      throw new Error("Invalid user data from DB");
-    }
-    return new User(data, false);
+  static fromDatabase(userData) {
+    return new User({
+      id: userData.id,
+      name: userData.name,
+      email: userData.email,
+      password: userData.password,
+      phone_number: userData.phone_number,
+      role: userData.role,
+
+      alamat_jalan: userData.alamat_jalan,
+      kelurahan: userData.kelurahan,
+      kecamatan: userData.kecamatan,
+      kabupaten_kota: userData.kabupaten_kota,
+      provinsi: userData.provinsi,
+      kode_pos: userData.kode_pos,
+
+      avatar_url: userData.avatar_url,
+      is_verified: userData.is_verified,
+      verification_token: userData.verification_token,
+      verification_token_expiry: userData.verification_token_expiry,
+      reset_token: userData.reset_token,
+      reset_token_expiry: userData.reset_token_expiry,
+      createdAt: userData.createdAt,
+      updatedAt: userData.updatedAt,
+      strict: false
+    });
   }
 
-  // Return basic user info
   toJSON() {
     return {
       id: this.id,
       name: this.name,
       email: this.email,
-      role: this.role,
-      paket_id: this.paket_id,
-      paket_expired: this.paket_expired,
-      is_verified: this.is_verified,
-      is_blocked: this.is_blocked,
-      blocked_reason: this.blocked_reason,
-      avatar_url: this.avatar_url,
       phone_number: this.phone_number,
-      address: this.address,
-      created_at: this.created_at,
-      last_login: this.last_login
-    };
-  }
-
-  // For login response
-  toAuthJSON() {
-    return {
-      access_token: `Bearer ${this.access_token}`,
-      refresh_token: `Bearer ${this.refresh_token}`,
-      ...this.toJSON(),
-    };
-  }
-
-  // For register response
-  toAuthRegJSON() {
-    return {
-      id: this.id,
-      name: this.name,
-      email: this.email,
       role: this.role,
-      paket_id: this.paket_id,
-      paket_expired: this.paket_expired,
-      verification_token: this.verification_token,
-      verification_token_expiry: this.verification_token_expiry,
-      is_verified: this.is_verified,
-      is_blocked: this.is_blocked,
+
+      alamat_jalan: this.alamat_jalan,
+      kelurahan: this.kelurahan,
+      kecamatan: this.kecamatan,
+      kabupaten_kota: this.kabupaten_kota,
+      provinsi: this.provinsi,
+      kode_pos: this.kode_pos,
+
       avatar_url: this.avatar_url,
-      created_at: this.created_at,
-      last_login: this.last_login
-    };
-  }
-
-  // For verification
-  toAuthVerificationJSON() {
-    return {
-      id: this.id,
-      name: this.name,
-      email: this.email,
-      role: this.role,
+      is_verified: this.is_verified,
       verification_token: this.verification_token,
       verification_token_expiry: this.verification_token_expiry,
-      is_verified: this.is_verified,
+      reset_token: this.reset_token,
+      reset_token_expiry: this.reset_token_expiry,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     };
   }
 
-  // For profile page
   toProfileJSON() {
     return {
       id: this.id,
       name: this.name,
       email: this.email,
-      role: this.role,
-      avatar_url: this.avatar_url,
       phone_number: this.phone_number,
-      address: this.address,
+      role: this.role,
+
+      alamat_jalan: this.alamat_jalan,
+      kelurahan: this.kelurahan,
+      kecamatan: this.kecamatan,
+      kabupaten_kota: this.kabupaten_kota,
+      provinsi: this.provinsi,
+      kode_pos: this.kode_pos,
+
+      avatar_url: this.avatar_url,
       is_verified: this.is_verified,
-      created_at: this.created_at
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     };
-  }
-
-  updateLoginTime() {
-    this.last_login = new Date();
-  }
-
-  verify() {
-    this.is_verified = true;
-    this.verification_token = null;
-  }
-
-  block(reason = 'Unknown reason') {
-    this.is_blocked = true;
-    this.blocked_reason = reason;
-  }
-
-  unblock() {
-    this.is_blocked = false;
-    this.blocked_reason = null;
-  }
-
-  isPaketExpired() {
-    if (!this.paket_expired) return true;
-    return new Date() > this.paket_expired;
-  }
-
-  isAdmin() {
-    return this.role === 'admin';
-  }
-
-  isSeller() {
-    return this.role === 'seller';
   }
 }

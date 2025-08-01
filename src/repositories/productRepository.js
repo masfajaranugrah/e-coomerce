@@ -14,6 +14,19 @@ class ProductRepository {
         }
     }
 
+async getProductsByIds(ids) {
+  try {
+    const products = await ProductModel.findAll({
+      where: {
+        id: ids,
+      },
+    });
+    return products.map(product => Product.fromDb(product.toJSON()));
+  } catch (error) {
+    throw new Error('Error fetching products: ' + error.message);
+  }
+}
+
 
     async getProductById(id) {
         try {

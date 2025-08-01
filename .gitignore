@@ -1,0 +1,14 @@
+# Node modules
+node_modules/
+
+# Local environment files
+.env
+.env.dev
+.env.prod
+
+# Ignore custom package folder
+node-pakab/
+pakab/
+
+# Allow .env.example to be tracked
+!.env.example

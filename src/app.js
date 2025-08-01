@@ -6,17 +6,28 @@ import helmet from "helmet";
 import compression from "compression";
 import cookieParser from 'cookie-parser';
 
-const app = express();
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import { swaggerOptions } from "./docs/swaggerOptions.js";
+ 
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
+
+
+
+const app = express();
+ 
 
 // route 
 import {errorHandler} from "./middlewares/error.middleware.js";
 import productRoutes from "./routes/product.js";
 import transactionRoutes from './routes/transaction.js';
-// import usersRoutes from './routes/user.js';
+import usersRoutes from './routes/user.js';
 import authRoutes from './routes/authRoutes.js';
  
-const whitelist = ['http://localhost:8080','https://722159a37f7c.ngrok-free.app', undefined];
+
+
+ const whitelist = ['http://localhost:3000','https://8fb2f61f8bf9.ngrok-free.app', undefined];
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || whitelist.includes(origin)) {
@@ -34,6 +45,8 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(helmet());
 app.use(compression());
+ 
+
 // app.use(requestLogger());
 
 app.get("/", (req, res) => {
@@ -42,14 +55,16 @@ app.get("/", (req, res) => {
         message: "Welcome to the API",
     });
 });
-
+ 
 
 app.use(errorHandler)
+// Swagger setup
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
-// app.use('/api/v1/users', usersRoutes);
+app.use('/api/v1/users', usersRoutes);
 
 
 export default app;

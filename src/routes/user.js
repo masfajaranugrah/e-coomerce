@@ -1,13 +1,22 @@
-// import { Router } from 'express';
-// import { createUserController } from '../controllers/userController.js';
-// const router = Router();
+import { Router } from 'express';
+import { getAllUserController, updateUserController, deleteUserController, getByIdUserController} from '../controllers/userController.js';
+ import { getUserWithTransactions } from '../controllers/transactionController.js';
+const router = Router();
 
- 
-// // router.get('/', getAllProductController);
-// // router.get('/:id', getByIdProductController);
-// router.post('/', createUserController);
-// // router.patch('/:id', updateProductController);
-// // router.delete('/:id', deleteProductController);
+ /**
+ * @openapi
+ * /users:
+ *   get:
+ *     summary: Get all users
+ *     responses:
+ *       200:
+ *         description: Berhasil mendapatkan semua users
+ */
+router.get('/', getAllUserController);
+router.get('/:id', getByIdUserController); 
+router.get('/:id/payment-history', getUserWithTransactions);
+router.patch('/:id', updateUserController);
+router.delete('/:id', deleteUserController);
  
 
-// export default router;
+export default router;

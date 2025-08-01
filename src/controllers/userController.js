@@ -1,31 +1,53 @@
-// import bcrypt from 'bcrypt';
-// import {createUser}  from '../usecases/user/createUser.js';
+import {getAllUser}  from '../usecases/user/getAllUser.js';
+import {getByIdUser}  from '../usecases/user/getByIdUser.js';
+import {deleteUser}  from '../usecases/user/deleteUser.js';
+import { updateUser } from '../usecases/user/updateUser.js';
 
-// const createUserController = async (req, res) => {
-//   try {
-//     const { name, email, passsword, passsword_verify, phone_number } = req.body;
+const getAllUserController = async (req, res) => {
+  try {
+     
+    const users = await getAllUser();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-//      if (passsword !== passsword_verify) {
-//       return res.status(400).json({ message: 'Password dan verifikasi tidak cocok' });
-//     }
+const getByIdUserController = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const user = await getByIdUser(userId);
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-//     const saltRounds = 10;
-//     const hash = bcrypt.hashSync(passsword, saltRounds);
 
-//     const userData = {
-//       name,
-//       email,
-//       password: hash,
-//       phone_number
-//     };
-//     const newUser = await createUser(userData);
+const deleteUserController = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const result = await deleteUser(userId);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-//     res.status(201).json(newUser);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+const updateUserController = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const userData = req.body;
+        const updatedUser = await updateUser(userId, userData);
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-// export {
-//   createUserController
-// }
+export {
+  getAllUserController,
+  getByIdUserController,
+  deleteUserController,
+  updateUserController
+}

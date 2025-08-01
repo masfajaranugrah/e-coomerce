@@ -1,25 +1,44 @@
+// models/transactionModel.js
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-const transactionModel = sequelize.define('transaction', {
+
+const Transaction = sequelize.define("transaction", {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        primaryKey: true
+        primaryKey: true,
     },
-    productId: {
+    order_id: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+    },
+    userId: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
     },
-    amount: DataTypes.INTEGER,
-    status: DataTypes.STRING,
-    snapToken: DataTypes.STRING,
-},
-    {
-        tableName: 'transaction',
-        timestamps: true,
-        freezeTableName: true
-    }
-);
+    amount: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        defaultValue: 0.00
+    },
+    status: {
+        type: DataTypes.ENUM("pending", "paid", "failed", "challenge", "canceled", "expired", "denied"),
+        defaultValue: "pending",
+    },
 
-export default transactionModel;
+    snapToken: {
+        type: DataTypes.STRING,
+    },
+}, {
+    tableName: "transactions",
+    timestamps: true,
+    freezeTableName: true,
+});
+
+
+export default Transaction;

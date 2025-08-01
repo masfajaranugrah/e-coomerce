@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 export const generateAccessToken = (user) => {
   return jwt,sign({
@@ -39,3 +40,7 @@ export const verifyAndDecodeToken = (token) => {
     throw new Error('Invalid token: ' + error.message);
   }
 }   
+
+export const generateVerificationToken = () => {
+  return crypto.randomBytes(32).toString('hex');  
+};
