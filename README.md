@@ -256,3 +256,8 @@ Proyek ini dilisensikan di bawah MIT License
 
 🔭 Coba Langsung API
 [🔗 Klik di sini untuk mengakses Postman Collection](https://www.postman.com/crimson-crater-159090/e-co/collection/l4ycn72/eccommerce)
+
+## Authors
+
+- [@masfajaranugrah](https://www.fajaranugrahdev.my.id)
+
