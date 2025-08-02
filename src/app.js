@@ -25,7 +25,8 @@ import transactionRoutes from './routes/transaction.js';
 import usersRoutes from './routes/user.js';
 import authRoutes from './routes/authRoutes.js';
 import couponRoutes from './routes/counponRoutes.js';
- 
+import shippingRoutes from './routes/shipping.js';
+
 
 
  const whitelist = ['http://localhost:3000','https://c7fd0769a117.ngrok-free.app', undefined];
@@ -67,6 +68,6 @@ app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
 app.use('/api/v1/users', usersRoutes);
 app.use('/api/v1/coupons', couponRoutes);
-
-
+app.use('/api/v1/shipping', shippingRoutes);
+ 
 export default app;

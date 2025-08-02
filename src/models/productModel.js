@@ -33,7 +33,7 @@ const Product = sequelize.define('Product', {
 }, {
   tableName: 'products',
   timestamps: true,
-  freezeTableName: true // This prevents Sequelize from pluralizing table names
+  freezeTableName: true  
 });
 
 export default Product;

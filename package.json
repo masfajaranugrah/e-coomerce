@@ -1,17 +1,18 @@
 {
   "name": "cobasaja-",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon src/index.js",
-    "prod": "NODE_ENV=production node src/index.js"
+    "dev": "NODE_ENV=development nodemon src/server.js",
+    "prod": "NODE_ENV=production node src/server.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.53.0",
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "compression": "^1.8.1",

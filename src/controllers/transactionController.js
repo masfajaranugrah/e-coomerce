@@ -7,16 +7,15 @@ import productRepository from "../repositories/productRepository.js";
 // [POST] Buat transaksi pembayaran
 const createPaymentController = async (req, res) => {
   try {
-    const { userId, products } = req.body;
-
-    if (!userId || !Array.isArray(products) || products.length === 0) {
+    const { userId, products, shipping } = req.body;
+     if (!userId || !Array.isArray(products) || products.length === 0) {
       return res.status(400).json({
         success: false,
         message: 'userId dan minimal satu product wajib disertakan',
       });
     }
 
-    const result = await createPaymentUse(products, userId);  
+    const result = await createPaymentUse(products, userId, shipping);  
 
     return res.status(201).json({ success: true, data: result });
 
@@ -27,6 +26,7 @@ const createPaymentController = async (req, res) => {
     });
   }
 };
+
 
 
 
