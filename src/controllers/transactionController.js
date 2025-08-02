@@ -7,7 +7,7 @@ import productRepository from "../repositories/productRepository.js";
 // [POST] Buat transaksi pembayaran
 const createPaymentController = async (req, res) => {
   try {
-    const { userId, products, shipping } = req.body;
+    const { userId, products, shipping , coupon} = req.body;
      if (!userId || !Array.isArray(products) || products.length === 0) {
       return res.status(400).json({
         success: false,
@@ -15,7 +15,7 @@ const createPaymentController = async (req, res) => {
       });
     }
 
-    const result = await createPaymentUse(products, userId, shipping);  
+    const result = await createPaymentUse(products, userId, shipping, coupon);  
 
     return res.status(201).json({ success: true, data: result });
 

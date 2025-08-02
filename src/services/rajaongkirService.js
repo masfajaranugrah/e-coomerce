@@ -36,7 +36,7 @@ export async function calculateShippingCost(origin, destination, weight, courier
  
  
 export default async function getShippingCostById({ origin, destination, weight, courier }) {
-  const BASE_URL = 'https://api-sandbox.collaborator.komerce.id/tariff/api/v1/calculate';
+  const BASE_URL = process.env.RAJAONGKIR_BASE_URL_DESTINATION;
 
   try {
     const response = await axios.get(BASE_URL, {
@@ -44,11 +44,11 @@ export default async function getShippingCostById({ origin, destination, weight,
         shipper_destination_id: origin,
         receiver_destination_id: destination,
         weight: weight,
-        courier: courier, // string format: "jnt-ez"
+        courier: courier,  
         item_value: 1,
       },
       headers: {
-        'x-api-key': '0kLCzgwz9ba1c273727739ffyyMTqZWP',
+        'x-api-key': process.env.KOMERCE_API_KEY,
       },
     });
 
@@ -76,36 +76,5 @@ export default async function getShippingCostById({ origin, destination, weight,
     throw new Error('Gagal mengambil ongkos kirim dari Komerce API');
   }
 }
-
-
-
-async function testShippingCost() {
-  try {
-    const allServices = await getShippingCostById({
-      origin: 501,
-      destination: 114,
-      weight: 1000,
-    });
-
-    console.log('📦 Semua layanan:', allServices);
-
-    // Pilih layanan berdasarkan courier dan service tertentu
-    const selectedCourier = 'NINJA';
-    const selectedService = 'Standard';
-
-    const chosen = allServices.find(
-      (item) =>
-        item.courier?.toLowerCase() === selectedCourier.toLowerCase() &&
-        item.service?.toLowerCase() === selectedService.toLowerCase()
-    );
-
-    if (!chosen) throw new Error('Layanan yang dipilih tidak tersedia');
-
-    console.log('✅ Layanan dipilih:', chosen);
-  } catch (err) {
-    console.error('❌ Error:', err.message);
-  }
-}
-testShippingCost();
 
  

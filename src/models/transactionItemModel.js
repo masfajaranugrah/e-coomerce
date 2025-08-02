@@ -20,6 +20,14 @@ const TransactionItem = sequelize.define("transactionItem", {
     type: DataTypes.UUID,
     allowNull: false,
   },
+  couponId: {
+  type: DataTypes.UUID,
+  allowNull: true,
+  references: {
+    model: 'coupons',
+    key: 'id'
+  }
+},
   quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,

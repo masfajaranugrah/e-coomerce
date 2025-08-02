@@ -2,7 +2,11 @@ import Users from './userModel.js';
 import Product from './productModel.js';
 import Transaction from './transactionModel.js';
 import TransactionItem from './transactionItemModel.js';
+import Coupon from './couponModel.js'; // import model kupon
 
+// Transaction - Coupon
+Transaction.belongsTo(Coupon, { as: 'coupon', foreignKey: 'couponId' });
+Coupon.hasMany(Transaction, { as: 'transactions', foreignKey: 'couponId' });
 // Users - Transaction
 Users.hasMany(Transaction, { as: 'transactions', foreignKey: 'userId' });
 Transaction.belongsTo(Users, { as: 'user', foreignKey: 'userId' });
@@ -20,5 +24,6 @@ export {
   Users,
   Product,
   Transaction,
-  TransactionItem
+  TransactionItem,
+  Coupon
 };
