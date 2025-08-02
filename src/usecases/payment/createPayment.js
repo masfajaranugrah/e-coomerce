@@ -1,22 +1,31 @@
-import { v4 as uuidv4 } from 'uuid';
+ import { v4 as uuidv4 } from 'uuid';
 import productRepository from '../../repositories/productRepository.js';
 import userRepository from '../../repositories/userRepository.js';
 import transactionRepository from '../../repositories/transactionRepository.js';
 import snap from '../../config/midtrans.js';
 
 export default async function createPaymentUse(items, userId) {
-  // Validasi user
   const user = await userRepository.getUserById(userId);
   if (!user) throw new Error('User tidak ditemukan');
 
-  // Ambil semua productId dari items
   const productIds = items.map(item => item.productId);
   const foundProducts = await productRepository.getProductsByIds(productIds);
   if (foundProducts.length !== productIds.length) {
     throw new Error('Satu atau lebih produk tidak ditemukan');
   }
+  
+  for (const item of items) {
+    const product = foundProducts.find(p => p.id === item.productId);
+    if (!product) throw new Error(`Produk dengan ID ${item.productId} tidak ditemukan`);
+    
+    if (product.stock <= 0) {
+      throw new Error(`Stok produk "${product.name}" habis`);
+    }
 
-  // Hitung totalAmount dan siapkan itemDetails untuk Midtrans
+    if (product.stock < item.quantity) {
+      throw new Error(`Stok produk "${product.name}" hanya tersedia ${product.stock}, tidak cukup untuk ${item.quantity}`);
+    }
+  }
   let totalAmount = 0;
   const itemDetails = items.map(item => {
     const product = foundProducts.find(p => p.id === item.productId);
@@ -25,7 +34,6 @@ export default async function createPaymentUse(items, userId) {
     const itemTotal = product.price * item.quantity;
     totalAmount += itemTotal;
 
-    // Simpan harga ke item untuk dipakai saat insert ke DB
     item.price = product.price;
 
     return {
@@ -36,14 +44,24 @@ export default async function createPaymentUse(items, userId) {
     };
   });
 
-  // Buat transaksi ID unik
+   
+  const feePercentage = 0.03; // 3%
+  const feeAmount = Math.ceil(totalAmount * feePercentage); // bulatkan ke atas
+
+  itemDetails.push({
+    id: 'admin-fee',
+    name: 'Biaya Transaksi',
+    price: feeAmount,
+    quantity: 1
+  });
+
+  const grossAmount = totalAmount + feeAmount;
   const transactionId = uuidv4();
 
-  // Parameter Midtrans
   const parameter = {
     transaction_details: {
       order_id: transactionId,
-      gross_amount: totalAmount,
+      gross_amount: grossAmount,
     },
     customer_details: {
       first_name: user.name,
@@ -53,7 +71,6 @@ export default async function createPaymentUse(items, userId) {
     item_details: itemDetails,
   };
 
-  // Buat transaksi di Midtrans
   let snapResponse;
   try {
     snapResponse = await snap.createTransaction(parameter);
@@ -67,7 +84,7 @@ export default async function createPaymentUse(items, userId) {
     id: transactionId,
     order_id: transactionId,
     userId,
-    amount: totalAmount,
+    amount: grossAmount,
     status: 'pending',
     snapToken: snapResponse.token,
   });
@@ -81,10 +98,12 @@ export default async function createPaymentUse(items, userId) {
       price: item.price,
     });
   }
-
+ 
   return {
     orderId: transactionId,
     snapToken: snapResponse.token,
     redirect_url: snapResponse.redirect_url,
   };
 }
+
+  

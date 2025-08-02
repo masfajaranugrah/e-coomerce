@@ -24,10 +24,11 @@ import productRoutes from "./routes/product.js";
 import transactionRoutes from './routes/transaction.js';
 import usersRoutes from './routes/user.js';
 import authRoutes from './routes/authRoutes.js';
+import couponRoutes from './routes/counponRoutes.js';
  
 
 
- const whitelist = ['http://localhost:3000','https://8fb2f61f8bf9.ngrok-free.app', undefined];
+ const whitelist = ['http://localhost:3000','https://c7fd0769a117.ngrok-free.app', undefined];
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || whitelist.includes(origin)) {
@@ -65,6 +66,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
 app.use('/api/v1/users', usersRoutes);
+app.use('/api/v1/coupons', couponRoutes);
 
 
 export default app;

@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import midtransClient from 'midtrans-client';
- export default async function HandleMidtransNotification(payload, { transactionRepository }) {
+
+export default async function HandleMidtransNotification(payload, { transactionRepository, productRepository }) {
   const { order_id, status_code, gross_amount, signature_key } = payload;
 
   if (!order_id || !status_code || !gross_amount || !signature_key) {
@@ -40,26 +41,32 @@ import midtransClient from 'midtrans-client';
     fraud_status,
     payment_type,
   } = midtransStatus;
+ 
+  let status;
 
-  // Mapping status Midtrans ke sistem internal
-let status;
+  if (transaction_status === 'settlement' && fraud_status === 'accept') {
+    status = 'paid';
+  } else if (transaction_status === 'capture') {
+    status = fraud_status === 'challenge' ? 'pending' : 'paid';
+  } else if (
+    transaction_status === 'cancel' ||
+    transaction_status === 'expire' ||
+    transaction_status === 'deny'
+  ) {
+    status = 'failed';
+  } else {
+    status = 'pending';
+  }
+ 
+  if (status === 'paid') {
+    const items = await transactionRepository.getTransactionItemsByTransactionId(order_id);
 
-if (transaction_status === 'settlement' && fraud_status === 'accept') {
-  status = 'paid';
-} else if (transaction_status === 'capture') {
-  status = fraud_status === 'challenge' ? 'pending' : 'paid';
-} else if (
-  transaction_status === 'cancel' ||
-  transaction_status === 'expire' ||
-  transaction_status === 'deny'
-) {
-  status = 'failed';
-} else {
-  status = 'pending'; // default/fallback
-}
+    for (const item of items) {
+      await productRepository.reduceStock(item.productId, item.quantity);
+    }
+  }
 
-
-  // Update database
+  
   await transactionRepository.updateStatus(order_id, {
     status,
     metode: payment_type,

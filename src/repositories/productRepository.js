@@ -73,6 +73,27 @@ async getProductsByIds(ids) {
         return await ProductModel.destroy({ where: { id } });
     }
 
+    async reduceStock(productId, quantity) {
+  try {
+    const product = await ProductModel.findByPk(productId);
+
+    if (!product) {
+      throw new Error('Produk tidak ditemukan');
+    }
+
+    if (product.stock < quantity) {
+      throw new Error(`Stok tidak cukup untuk produk ${product.name}`);
+    }
+
+    product.stock -= quantity;
+    await product.save();
+
+    return Product.fromDb(product.toJSON());
+  } catch (error) {
+    throw new Error('Error mengurangi stok: ' + error.message);
+  }
+}
+
 }
 
 export default new ProductRepository();

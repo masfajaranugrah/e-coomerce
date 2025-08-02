@@ -3,6 +3,7 @@ import createPaymentUse from "../usecases/payment/createPayment.js";
 import { Users, Transaction, Product, TransactionItem } from '../models/index.js';
 import HandleMidtransNotification from "../usecases/payment/HandleMidtransNotification.js";
 import transactionRepository from "../repositories/transactionRepository.js";
+import productRepository from "../repositories/productRepository.js";
 // [POST] Buat transaksi pembayaran
 const createPaymentController = async (req, res) => {
   try {
@@ -95,7 +96,10 @@ const getUserWithTransactions = async (req, res) => {
 
 const midtransNotificationController = async (req, res) => {
    try {
-    const result = await HandleMidtransNotification(req.body, { transactionRepository });
+    const result = await HandleMidtransNotification(req.body, { 
+       transactionRepository,
+  productRepository,
+     });
     return res.status(200).json({ success: true, status: result.status });
   } catch (err) {
     console.error('Midtrans Notification Error:', err.message);

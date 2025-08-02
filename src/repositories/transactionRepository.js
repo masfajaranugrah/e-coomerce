@@ -1,5 +1,8 @@
 import transactionModel from "../models/transactionModel.js";
 import TransactionItem from "../models/transactionItemModel.js";
+import Product from "../models/productModel.js";
+
+
 class TransactionRepository {
   async createPayments(dataTransaction) {
     return await transactionModel.create(dataTransaction);
@@ -31,6 +34,18 @@ class TransactionRepository {
       where: { order_id },
     });
   }
+ 
+  async  getTransactionItemsByTransactionId(transactionId) {
+  return await TransactionItem.findAll({
+    where: { transactionId },
+    include: [
+      {
+        model: Product,
+        as: 'product',
+      }
+    ]
+  });
+}
 }
 
 export default new TransactionRepository();

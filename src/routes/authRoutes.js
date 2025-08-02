@@ -7,15 +7,14 @@ import {
   verifyCodeController,
   resendCodeController
 } from '../controllers/auth/authController.js';
-import { authMiddleware } from '../middlewares/authenticate.js';
-
+ 
 const router = express.Router();
 
  router.post('/register', registerController);
 router.post('/login', loginController);
 router.post('/refresh', refreshTokenController);
 
- router.post('/logout', authMiddleware, logoutController);
+ router.post('/logout', logoutController);
 router.post('/verify', verifyCodeController); // untuk verifikasi kode manual
 router.post('/resend-code', resendCodeController); // untuk kirim ulang
 export default router;

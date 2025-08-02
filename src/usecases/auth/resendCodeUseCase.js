@@ -1,5 +1,4 @@
-import crypto from 'crypto';
-import dayjs from 'dayjs';
+ import dayjs from 'dayjs';
 import authRepository from '../../repositories/authRepository.js';
 
 export const resendCodeUseCase = async (email) => {
@@ -7,8 +6,8 @@ export const resendCodeUseCase = async (email) => {
   if (!user) throw new Error('User tidak ditemukan');
 
   if (user.is_verified) throw new Error('Akun sudah terverifikasi');
-
-  const newToken = crypto.randomBytes(32).toString('hex');
+ 
+  const newToken =  Math.floor(100000 + Math.random() * 900000).toString();
   const newExpiry = dayjs().add(1, 'hour').toDate();
 
   await authRepository.markVerified(email, {

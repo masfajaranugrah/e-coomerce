@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 export const authMiddleware = (req, res, next) => {
     const token = req.cookies.accessToken;
     if (!token) {
-        return res.status(401).json({ message: 'Token tidak ditemukan' });
+        return res.status(401).json({ message: 'Anda belum login. Silakan login untuk melanjutkan' });
     }
 
     try {
@@ -10,7 +10,7 @@ export const authMiddleware = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
-        res.status(403).json({ message: 'Token tidak valid atau kedaluwarsa' });
+        res.status(403).json({ message: 'Sesi Anda telah berakhir. Silakan login kembali.' });
     }
 };
 
@@ -19,25 +19,25 @@ export const authenticate = (req, res, next) => {
   const token = req.cookies?.accessToken;
 
   if (!token) {
-    return res.status(401).json({ message: 'Access token tidak ditemukan di cookie' });
+    return res.status(401).json({ message: 'Anda belum login. Silakan login untuk melanjutkan.' });
   }
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decodedUser) => {
     if (err) {
-      return res.status(403).json({ message: 'Access token tidak valid atau kedaluwarsa' });
+      return res.status(403).json({ message: 'Sesi Anda telah berakhir. Silakan login kembali.' });
     }
 
-    req.user = decodedUser; // bisa isi id, role, email, dll
+    req.user = decodedUser;  
     next();
   });
 };
 
 export const refreshTokenMiddleware = (req, res) => {
   const refreshToken = req.cookies?.refreshToken;
-  if (!refreshToken) return res.status(401).json({ message: 'Refresh token tidak ditemukan' });
+  if (!refreshToken) return res.status(401).json({ message: 'Sesi tidak ditemukan. Silakan login ulang.' });
 
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: 'Refresh token tidak valid atau kedaluwarsa' });
+    if (err) return res.status(403).json({ message: 'Sesi Anda sudah tidak berlaku. Silakan login kembali.' });
 
     // Buat accessToken baru
     const newAccessToken = jwt.sign(
