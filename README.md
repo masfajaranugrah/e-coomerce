@@ -260,4 +260,3 @@ Proyek ini dilisensikan di bawah MIT License
 ## Authors
 
 - [@masfajaranugrah](https://www.fajaranugrahdev.my.id)
-
